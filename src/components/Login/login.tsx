@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Input } from 'antd';
 import './login.css';
 import axios from 'axios';
-import '../common/axiosSetting'
+import '../../common/axiosSetting'
 
 export default class Login extends React.Component<any, any>{
     token: any;
@@ -44,7 +44,7 @@ export default class Login extends React.Component<any, any>{
     }
 
     tokenVerify() {
-        axios.post('/getdd')
+        axios.post('user/getdd')
         .then(function (response) {
         })
         .catch(function (error) {

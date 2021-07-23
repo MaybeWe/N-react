@@ -3,8 +3,31 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import RouterConfig from './Router/index';
+import { Layout } from 'antd';
+import Top from './components/Top';
 
-ReactDOM.render(<RouterConfig/>, document.getElementById('root'));
+const {  Content, Footer } = Layout;
+
+function BoilingVerdict(props:any) {
+    if (props.isLogin == true) {
+      return <Top></Top>;
+    }
+    return <></>;
+}
+
+ReactDOM.render(
+    <>
+        <div id="bg"/>
+        <Layout className="layout">
+        <BoilingVerdict isLogin={true} />
+            <Content style={{ padding: '0 50px' }}>
+                <RouterConfig/>
+            </Content>
+            <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
+        </Layout>
+    </>,
+    document.getElementById('root')
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
