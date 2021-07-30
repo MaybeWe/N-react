@@ -19,7 +19,7 @@ ReactDOM.render(
     <>
         <div id="bg"/>
         <Layout className="layout">
-        <BoilingVerdict isLogin={true} />
+            <BoilingVerdict isLogin={true} />
             <Content style={{ padding: '0 50px' }}>
                 <RouterConfig/>
             </Content>
