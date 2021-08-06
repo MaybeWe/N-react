@@ -1,7 +1,6 @@
-// 定义增加 state 类型常量
-export const INCREMENT = "INCREMENT";
-export type INCREMENT_TYPE = typeof INCREMENT;
+// 定义登陆状态
+export const LOGINNO = false;
+export type LOGINNO_TYPE = typeof LOGINNO;
 
-// 定义减少 state 类型常量
-export const DECREMENT = "DECREMENT";
-export type DECREMENT_TYPE = typeof DECREMENT;
+export const LOGINOK = true;
+export type LOGINOK_TYPE = typeof LOGINOK;

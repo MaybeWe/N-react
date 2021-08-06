@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { message } from 'antd'
+import history from './history';
 
 axios.defaults.withCredentials = true
 axios.defaults.timeout = 10000
@@ -25,18 +26,10 @@ const codeMessage = {
 axios.interceptors.request.use( config => {
         // Do something before request is sent
         const token =  window.localStorage.getItem("accessToken")
-        // console.log(window.location.href.indexOf('/user/login') > -1)
-        // if(config.url.indexOf('/auth/oauth/token') > 0){
-        //     config.headers.Authorization = 'Basic dnVlOnZ1ZQ==' // 增加客户端认证
-        // }else{
-        //     config.headers.Authorization = token // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
-        // }
-        config.headers.Authorization = `Bearer ${token}` // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
-        const {url} = config
-        // if(/^\/api\//.test(url) && !token && !window.location.href.indexOf('user') > -1){
-        //     const { dispatch } = store
-        //     dispatch(routerRedux.replace('/user/login')) // 跳转到登录页
-        // }
+        config.headers.Authorization = `Bearer ${token}` // 让每个请求携带token
+        if(!token){
+            history.push('/login'); // 跳转到登录页
+        }
         return config
     },
     error => {
@@ -46,69 +39,68 @@ axios.interceptors.request.use( config => {
     }
 )
 // respone拦截器
-// axios.interceptors.response.use(
-//     response => {
-//         /**
-//          * 下面的注释为通过response自定义code来标示请求状态，当code返回如下情况为权限有问题，登出并返回到登录页
-//          * 如通过xmlhttprequest 状态码标识 逻辑可写在下面error中
-//          */
-//         const res = response.data
-//         if (response.status !== 200 && res.status !== 200) {
-//             message.error(response.data.message)
-//         } else {
-//             return response.data
-//         }
-//     },
-//     error => {
-//         // console.log(JSON.stringify(error)) // for debug
-//         if (error === undefined || error.code === 'ECONNABORTED') {
-//             message.warning('服务请求超时')
-//             return Promise.reject(error)
-//         }
-//         // const { response: { status, statusText, data: { msg = '服务器发生错误' } }} = error
-//         // const { response } = error
-//         // const { dispatch } = store
-//         // const text = codeMessage[status] || statusText || msg
+axios.interceptors.response.use(
+    response => {
+        /**
+         * 下面的注释为通过response自定义code来标示请求状态，当code返回如下情况为权限有问题，登出并返回到登录页
+         * 如通过xmlhttprequest 状态码标识 逻辑可写在下面error中
+         */
+        const res = response.data
+        const status:string = response.status.toString()
+        if (!status.includes('20') && res.status !== 200) {
+            message.error(response.data.message)
+        } else {
+            return response.data
+        }
+    },
+    error => {
+        // console.log(JSON.stringify(error)) // for debug
+        if (error === undefined || error.code === 'ECONNABORTED') {
+            message.warning('服务请求超时')
+            return Promise.reject(error)
+        }
+        const { response: { status, statusText, data: { msg = '服务器发生错误' } }} = error
+        const { response } = error
+        // const { dispatch } = store
+        // const text = codeMessage[status] || statusText || msg
 
-//         // if (status === 400) {
-//         //     // message.warning('账户或密码错误！')
-//         //     dispatch(routerRedux.push('/user/login'))
-//         // }
-//         // const info = response.data
-//         // if (status === 401 || info.status === 40101) {
-//         //     dispatch({
-//         //         type: 'login/logout',
-//         //     })
-//         // }
-//         // if (status === 403) {
-//         //     dispatch(routerRedux.push('/exception/403'))
-//         //     // Notification.warning({
-//         //     //     title: '禁止',
-//         //     //     message: info.message,
-//         //     //     type: 'error',
-//         //     //     duration: 2 * 1000,
-//         //     // })
-//         // }
-//         // if (info.status === 30101) {
-//         //     dispatch(routerRedux.push('/exception/500'))
-//         //     // Notification.warning({
-//         //     //     title: '失败',
-//         //     //     message: info.message,
-//         //     //     type: 'error',
-//         //     //     duration: 2 * 1000,
-//         //     // })
-//         // }
-//         // if (response.status === 504) {
-//         //     dispatch(routerRedux.push('/exception/500'))
-//         //     // Message({
-//         //     //     message: '后端服务异常，请联系管理员！',
-//         //     //     type: 'error',
-//         //     //     duration: 5 * 1000,
-//         //     // })
-//         // }
-//         // message.error(`${status}:${text}`)
-//         // throw error
-//         // return error
-//         return Promise.reject(error)
-//     }
-// )
+        // if (status === 400) {
+        //     // message.warning('账户或密码错误！')
+        //     dispatch(routerRedux.push('/user/login'))
+        // }
+        const info = response.data
+        if (status === 401 || info.status === 40101) {
+            history.push('/login');
+        }
+        // if (status === 403) {
+        //     dispatch(routerRedux.push('/exception/403'))
+        //     // Notification.warning({
+        //     //     title: '禁止',
+        //     //     message: info.message,
+        //     //     type: 'error',
+        //     //     duration: 2 * 1000,
+        //     // })
+        // }
+        // if (info.status === 30101) {
+        //     dispatch(routerRedux.push('/exception/500'))
+        //     // Notification.warning({
+        //     //     title: '失败',
+        //     //     message: info.message,
+        //     //     type: 'error',
+        //     //     duration: 2 * 1000,
+        //     // })
+        // }
+        // if (response.status === 504) {
+        //     dispatch(routerRedux.push('/exception/500'))
+        //     // Message({
+        //     //     message: '后端服务异常，请联系管理员！',
+        //     //     type: 'error',
+        //     //     duration: 5 * 1000,
+        //     // })
+        // }
+        // message.error(`${status}:${text}`)
+        // throw error
+        // return error
+        return Promise.reject(error)
+    }
+)
